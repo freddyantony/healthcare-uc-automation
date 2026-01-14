@@ -8,7 +8,7 @@
 
 This repository contains automation frameworks, scripts, and methodology documentation for **Healthcare Unified Communications Infrastructure Management**. These tools are designed to support large-scale healthcare communication environments while maintaining HIPAA compliance and operational continuity.
 
-**Author:** Freddy Simon Paul Antony  
+**Author:** Freddy Antony  
 **Environment:** Enterprise Healthcare (40,000+ endpoints)  
 **Focus Areas:** 
 - Legacy-to-cloud migration automation
@@ -178,12 +178,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-**Freddy Simon Paul Antony**  
+**Freddy Antony**  
 Lead Collaboration Engineer | Healthcare Communication Infrastructure  
 IEEE Member | CCNA Certified
 
-- [Google Scholar](https://scholar.google.com/citations?user=I3CTJ7IAAAAJ)
-- [LinkedIn](https://www.linkedin.com/in/[YOUR-LINKEDIN])
+- [Google Scholar](https://scholar.google.com/citations?user=I3CTJ7IAAAAJ&hl=en)
+- [LinkedIn](https://www.linkedin.com/in/freddyantony)
 
 ---
 
