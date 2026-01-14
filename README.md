@@ -9,7 +9,7 @@
 This repository contains automation frameworks, scripts, and methodology documentation for **Healthcare Unified Communications Infrastructure Management**. These tools are designed to support large-scale healthcare communication environments while maintaining HIPAA compliance and operational continuity.
 
 **Author:** Freddy Antony  
-**Environment:** Enterprise Healthcare (40,000+ endpoints)  
+**Environment:** Enterprise Healthcare
 **Focus Areas:** 
 - Legacy-to-cloud migration automation
 - 911/E911 compliance (RAY BAUM's Act / Kari's Law)
@@ -120,7 +120,7 @@ This framework has been developed and validated in production healthcare environ
 
 ```bash
 # Clone the repository
-git clone https://github.com/[YOUR-USERNAME]/healthcare-uc-automation.git
+git clone https://github.com/freddyantony/healthcare-uc-automation.git
 cd healthcare-uc-automation
 
 # Create virtual environment
