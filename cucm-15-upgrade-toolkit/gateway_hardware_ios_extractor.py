@@ -179,26 +179,31 @@ class CiscoToolGUI:
 
                 try:
                     hostname = re.search(r'(\S+)\s+uptime', output).group(1)
-                except: hostname = "N/A"
+                except (AttributeError, IndexError):
+                    hostname = "N/A"
 
                 try:
                     uptime = re.search(r'\S+\s+uptime is\s+(.+)', output).group(1).replace(',', '')
-                except: uptime = "N/A"
+                except (AttributeError, IndexError):
+                    uptime = "N/A"
 
                 try:
                     version = re.search(r'Cisco\s(?:IOS|NX-OS)\s(?:Software,)?\s?.*Version\s([\w.()]+)', output).group(1)
-                except: version = "N/A"
+                except (AttributeError, IndexError):
+                    version = "N/A"
 
                 try:
                     serial = re.search(r'Processor\sboard\sID\s(\S+)', output)
                     if not serial:
                         serial = re.search(r'System\sserial\snumber\s*:\s*(\S+)', output, re.IGNORECASE)
                     serial = serial.group(1) if serial else "N/A"
-                except: serial = "N/A"
+                except (AttributeError, IndexError):
+                    serial = "N/A"
 
                 try:
                     ios = re.search(r'System\simage\sfile\sis\s"([^"]+)"', output).group(1)
-                except: ios = "N/A"
+                except (AttributeError, IndexError):
+                    ios = "N/A"
 
                 try:
                     model_match = re.search(r'[Cc]isco\s(\S+)\s+\(.+\)\s+processor', output)
@@ -207,14 +212,16 @@ class CiscoToolGUI:
                     if not model_match:
                         model_match = re.search(r'Model number\s*:\s*(\S+)', output)
                     model = model_match.group(1) if model_match else "N/A"
-                except: model = "N/A"
+                except (AttributeError, IndexError):
+                    model = "N/A"
 
                 try:
                     memory_match = re.search(r'with\s+([\d,]+)\s+bytes of memory', output)
                     if not memory_match:
                         memory_match = re.search(r'Memory size\s*:\s*(\d+)', output)
                     memory = memory_match.group(1) if memory_match else "N/A"
-                except: memory = "N/A"
+                except (AttributeError, IndexError):
+                    memory = "N/A"
 
                 results.append({
                     "IP Address": ip,

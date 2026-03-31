@@ -4,7 +4,7 @@ import pandas as pd
 from playwright.sync_api import sync_playwright
 
 # --- CONFIGURATION ---
-input_file = 'Physical_Phone_&_Device_Default_Discovery_Report.csv'
+input_file = 'Physical_Phone_Device_Default_Discovery_Report.csv'
 output_file = 'Phone_Firmware_Compliance_Audit_Report.csv'
 cisco_url = "https://www.cisco.com/c/dam/en/us/td/docs/voice_ip_comm/uc_system/unified/communications/system/Compatibility/CSR-Compatibility-Matrix-InteractiveHTML.html"
 

@@ -83,7 +83,7 @@ for group in CLUSTER_GROUPS:
             print(f"[{cluster_name}] ❌ Connection failed: {e}")
 
 if master_data_list:
-    filename = 'Physical_Phone_&_Device_Default_Discovery_Report.csv'
+    filename = 'Physical_Phone_Device_Default_Discovery_Report.csv'
     print(f"\nWriting all data to {filename}...")
     
     with open(filename, mode='w', newline='') as file:
