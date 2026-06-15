@@ -1,0 +1,27 @@
+# Healthcare UC Automation - Example Ansible Inventory
+# ----------------------------------------------------
+# Copy this file to inventory.yml and populate with your environment details.
+# Do NOT commit a populated inventory.yml — keep real hostnames/credentials out
+# of version control. Use Ansible Vault or environment variables for secrets.
+#
+#   cp inventory.yml.example inventory.yml
+
+all:
+  vars:
+    # AXL credentials should come from Ansible Vault or the environment, never
+    # hard-coded here. These names are referenced by the playbooks.
+    axl_username: "{{ lookup('env', 'CUCM_AXL_USER') }}"
+    axl_password: "{{ lookup('env', 'CUCM_AXL_PASSWORD') }}"
+    axl_version: "12.5"
+    verify_ssl: true
+
+  children:
+    cucm_publishers:
+      hosts:
+        cucm-pub:
+          ansible_host: cucm-pub.example.org   # replace with your CUCM Publisher
+
+    emergency_responder:
+      hosts:
+        cer-pub:
+          ansible_host: cer-pub.example.org    # replace with your CER Publisher

@@ -6,15 +6,18 @@
 
 ## Overview
 
-This repository contains automation frameworks, scripts, and methodology documentation for **Healthcare Unified Communications Infrastructure Management**. These tools are designed to support large-scale healthcare communication environments while maintaining HIPAA compliance and operational continuity.
+This repository contains automation scripts and methodology documentation for
+**healthcare unified communications infrastructure management**. The tools and
+frameworks are intended for open use by the broader healthcare IT community —
+particularly resource-constrained rural and Critical Access Hospitals that need
+RAY BAUM's Act 911 compliance and safe legacy-to-cloud migration without
+proprietary commercial tooling.
 
-**Author:** Freddy Antony  
-**Environment:** Enterprise Healthcare
-**Focus Areas:** 
-- Legacy-to-cloud migration automation
-- 911/E911 compliance (RAY BAUM's Act / Kari's Law)
-- Cisco UC provisioning and management
-- Healthcare contact center operations
+**Author:** Freddy Antony
+**Focus Areas:**
+- Staged legacy-to-cloud migration (the Clinical Airlock Framework)
+- 911 / E911 compliance (RAY BAUM's Act / Kari's Law) via deterministic Layer 2 mapping
+- Cisco UC provisioning, inventory, and compliance reporting (AXL / Ansible)
 
 ---
 
@@ -24,86 +27,59 @@ This repository contains automation frameworks, scripts, and methodology documen
 healthcare-uc-automation/
 ├── README.md
 ├── LICENSE
+├── requirements.txt
 ├── docs/
 │   ├── methodology/
-│   │   ├── legacy-migration-framework.md
-│   │   ├── e911-compliance-checklist.md
-│   │   └── zero-downtime-cutover-guide.md
+│   │   ├── clinical-airlock-framework.md      # Staged cloud-migration methodology
+│   │   └── e911-compliance-checklist.md       # RAY BAUM's Act implementation guide
 │   └── architecture/
 │       └── healthcare-uc-reference-architecture.md
 ├── ansible/
 │   ├── playbooks/
-│   │   ├── cucm-bulk-provisioning.yml
-│   │   ├── endpoint-migration.yml
-│   │   └── e911-location-update.yml
-│   ├── inventory/
-│   │   └── inventory.yml.example
-│   └── roles/
-│       └── cisco_uc_common/
+│   │   └── e911-location-update.yml           # Bulk ERL location updates
+│   └── inventory/
+│       └── inventory.yml.example              # Sanitized example inventory
 ├── python/
 │   ├── cucm_axl/
 │   │   ├── __init__.py
-│   │   ├── phone_operations.py
-│   │   └── user_provisioning.py
-│   ├── webex_calling/
-│   │   ├── __init__.py
-│   │   └── migration_tools.py
+│   │   └── phone_operations.py                # CUCM AXL phone & E911 operations
 │   └── reporting/
-│       ├── endpoint_inventory.py
-│       └── compliance_report.py
-├── templates/
-│   ├── migration-assessment-template.xlsx
-│   └── e911-location-database-template.csv
-└── examples/
-    └── sample-configs/
+│       ├── __init__.py
+│       ├── endpoint_inventory.py              # Live AXL inventory → CSV (functional)
+│       └── compliance_report.py              # E911 dispatchable-location report (functional)
+└── templates/
+    └── e911-location-database-template.csv    # ERL location-mapping template
 ```
 
 ---
 
 ## Key Components
 
-### 1. Ansible Playbooks for Cisco UC Management
+### 1. Clinical Airlock Framework (methodology)
 
-Automated provisioning and configuration management for Cisco Unified Communications environments:
+A vendor-agnostic, three-phase staged methodology for migrating legacy PBX systems
+to cloud UC without disrupting life-critical clinical services: **Forensic Discovery
+Protocol → Clinical Sandbox Validation → Data-Driven Promotion Analysis.** See
+[docs/methodology/clinical-airlock-framework.md](docs/methodology/clinical-airlock-framework.md).
 
-- **Bulk Phone Provisioning:** Automate deployment of hundreds/thousands of endpoints
-- **User Migration:** Streamlined user moves between clusters
-- **E911 Location Updates:** Bulk updates to Emergency Responder location database
+### 2. E911 / RAY BAUM's Act Compliance
 
-### 2. Python Scripts for CUCM AXL Integration
+Implementation guidance plus working tooling for dispatchable-location accuracy using
+deterministic Layer 2 switch-port mapping (room/bed-level), rather than probabilistic
+IP-subnet mapping:
 
-Python utilities leveraging Cisco AXL API for programmatic management:
+- [E911 Compliance Checklist](docs/methodology/e911-compliance-checklist.md) — implementation guide
+- `ansible/playbooks/e911-location-update.yml` — bulk ERL update playbook (dry-run by default)
+- `python/reporting/compliance_report.py` — generates a per-building dispatchable-location gap report
 
-- Phone registration and status monitoring
-- Bulk user provisioning with CSV input
-- Endpoint inventory and compliance reporting
+### 3. CUCM Inventory & Reporting (Python / AXL)
 
-### 3. Webex Calling Migration Tools
+Functional Python utilities using the Cisco AXL SOAP API:
 
-Tools supporting legacy-to-cloud migration:
-
-- Pre-migration assessment automation
-- Configuration export and transformation
-- Post-migration validation scripts
-
-### 4. Methodology Documentation
-
-Documented implementation frameworks based on enterprise-scale healthcare deployments:
-
-- Zero-downtime migration methodology
-- RAY BAUM's Act compliance implementation guide
-- Healthcare-specific integration patterns (Epic/Cerner CTI)
-
----
-
-## Use Cases
-
-This framework has been developed and validated in production healthcare environments supporting:
-
-- **40,000+ communication endpoints** across multi-state operations
-- **15-18 million annual contact center calls**
-- **HIPAA-compliant** infrastructure management
-- **RAY BAUM's Act / Kari's Law** 911 compliance
+- `python/reporting/endpoint_inventory.py` — connects to CUCM over AXL, executes a live
+  inventory query, and writes a CSV plus a model/device-pool summary.
+- `python/cucm_axl/phone_operations.py` — phone-operation and E911 location helpers
+  (reference implementation; sanitized of environment-specific detail).
 
 ---
 
@@ -112,81 +88,97 @@ This framework has been developed and validated in production healthcare environ
 ### Prerequisites
 
 - Python 3.8+
-- Ansible 2.9+
-- Access to Cisco CUCM AXL API (for CUCM scripts)
-- Appropriate network access to UC infrastructure
+- Ansible 2.9+ (for the playbooks)
+- Access to a Cisco CUCM AXL API (read-capable application user)
+- The **AXL WSDL toolkit** for your CUCM version, downloaded from
+  *CUCM Admin > Application > Plugins > Cisco CallManager AXL SOAP Toolkit*
+  (Cisco licensing; not redistributed here)
 
 ### Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/freddyantony/healthcare-uc-automation.git
 cd healthcare-uc-automation
 
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Configuration
+### Credentials
 
-1. Copy example inventory file:
-   ```bash
-   cp ansible/inventory/inventory.yml.example ansible/inventory/inventory.yml
-   ```
+Set AXL credentials in the environment (or a local `.env`, which is git-ignored):
 
-2. Update with your environment details (sanitize any PHI/sensitive data)
+```bash
+export CUCM_AXL_USER="axl-readonly"
+export CUCM_AXL_PASSWORD="********"
+```
 
-3. Configure credentials using environment variables or Ansible Vault
+### Example: live endpoint inventory
+
+```bash
+python python/reporting/endpoint_inventory.py \
+    --host cucm-pub.example.org \
+    --wsdl ./schema/12.5/AXLAPI.wsdl \
+    --output endpoint_inventory.csv
+```
+
+### Example: E911 compliance report
+
+```bash
+python python/reporting/compliance_report.py \
+    --inventory endpoint_inventory.csv \
+    --locations templates/e911-location-database-template.csv \
+    --output e911_compliance_report.csv
+```
 
 ---
 
 ## Documentation
 
-Detailed methodology documentation is available in the `/docs` directory:
-
 | Document | Description |
 |----------|-------------|
-| [Legacy Migration Framework](docs/methodology/legacy-migration-framework.md) | Zero-downtime migration methodology for healthcare PBX-to-cloud transitions |
+| [Clinical Airlock Framework](docs/methodology/clinical-airlock-framework.md) | Staged zero-downtime migration methodology for healthcare PBX-to-cloud transitions |
 | [E911 Compliance Checklist](docs/methodology/e911-compliance-checklist.md) | RAY BAUM's Act implementation guide for healthcare MLTS |
-| [Reference Architecture](docs/architecture/healthcare-uc-reference-architecture.md) | Healthcare UC infrastructure design patterns |
+| [Reference Architecture](docs/architecture/healthcare-uc-reference-architecture.md) | High-availability healthcare UC design patterns |
 
 ---
 
 ## Contributing
 
-This repository is maintained as part of ongoing efforts to document and share healthcare communication infrastructure methodologies. Contributions, suggestions, and feedback are welcome.
+This repository documents healthcare communication infrastructure methodologies for
+open use by the broader healthcare IT community — particularly resource-constrained
+rural and Critical Access Hospitals seeking RAY BAUM's Act compliance without
+proprietary commercial tooling.
+
+Hospital IT teams, healthcare informatics researchers, and UC engineers are welcome to
+open issues with questions, deployment feedback, or suggested improvements via the
+GitHub Issues tab.
 
 ---
 
 ## Disclaimer
 
-- All code and documentation is sanitized to remove any Protected Health Information (PHI) or organization-specific sensitive data
-- Scripts are provided as reference implementations and should be tested in non-production environments before deployment
-- Users are responsible for ensuring compliance with their organization's security policies and HIPAA requirements
+- All code and documentation is sanitized to remove any Protected Health Information
+  (PHI) or organization-specific sensitive data.
+- Scripts are provided as reference implementations and should be tested in
+  non-production environments before deployment.
+- Users are responsible for compliance with their organization's security policies and
+  HIPAA requirements.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Licensed under the MIT License — see the [LICENSE](LICENSE) file.
 
 ---
 
 ## Author
 
-**Freddy Antony**  
-Lead Collaboration Engineer | Healthcare Communication Infrastructure  
-IEEE Member | CCNA Certified
+**Freddy Antony**
+Lead Collaboration Engineer | Healthcare Communication Infrastructure
+IEEE Senior Member | CCNA Certified
 
 - [Google Scholar](https://scholar.google.com/citations?user=I3CTJ7IAAAAJ&hl=en)
 - [LinkedIn](https://www.linkedin.com/in/freddyantony)
-
----
-
-## Acknowledgments
-
-This work is developed as part of efforts to document and disseminate healthcare communication infrastructure modernization methodologies for the benefit of the broader U.S. healthcare sector.

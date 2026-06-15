@@ -1,0 +1,87 @@
+---
+# Healthcare UC Automation - Bulk E911 Location Update
+# ----------------------------------------------------
+# Reads an ERL location-mapping CSV (see templates/e911-location-database-template.csv)
+# and applies each switch-port-to-location mapping to Cisco Emergency Responder via
+# its administrative API, supporting RAY BAUM's Act dispatchable-location compliance.
+#
+# Run:
+#   export CUCM_AXL_USER=... CUCM_AXL_PASSWORD=...
+#   ansible-playbook -i inventory/inventory.yml playbooks/e911-location-update.yml \
+#       -e "location_csv=../templates/e911-location-database-template.csv"
+#
+# Safety:
+#   - Runs in check/report mode by default (apply_changes=false).
+#   - Set -e "apply_changes=true" to perform writes.
+#   - All operations are logged; no PHI is read or written.
+
+- name: Bulk update E911 ERL location mappings
+  hosts: emergency_responder
+  gather_facts: false
+  vars:
+    apply_changes: false
+    location_csv: "../templates/e911-location-database-template.csv"
+
+  tasks:
+    - name: Verify location CSV exists
+      ansible.builtin.stat:
+        path: "{{ location_csv }}"
+      register: csv_stat
+      delegate_to: localhost
+
+    - name: Fail if CSV is missing
+      ansible.builtin.fail:
+        msg: "Location CSV not found at {{ location_csv }}"
+      when: not csv_stat.stat.exists
+
+    - name: Read ERL location mappings from CSV
+      ansible.builtin.read_csv:
+        path: "{{ location_csv }}"
+      register: erl_rows
+      delegate_to: localhost
+
+    - name: Validate each row has a complete dispatchable location
+      ansible.builtin.assert:
+        that:
+          - item.building | trim | length > 0
+          - item.floor | trim | length > 0
+          - item.room | trim | length > 0
+          - item.switch_name | trim | length > 0
+          - item.switch_port | trim | length > 0
+        fail_msg: "Incomplete dispatchable location for device {{ item.device_name }}"
+        quiet: true
+      loop: "{{ erl_rows.list }}"
+      loop_control:
+        label: "{{ item.device_name }}"
+
+    - name: Report planned ERL updates (check mode)
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.switch_name }}:{{ item.switch_port }} ->
+          ERL {{ item.erl_name }}
+          ({{ item.building }} / Floor {{ item.floor }} / {{ item.room }})
+      loop: "{{ erl_rows.list }}"
+      loop_control:
+        label: "{{ item.device_name }}"
+      when: not apply_changes
+
+    - name: Apply ERL switch-port location mapping in Cisco Emergency Responder
+      ansible.builtin.uri:
+        url: "https://{{ ansible_host }}/cerappservices/erl/switchport"
+        method: POST
+        user: "{{ axl_username }}"
+        password: "{{ axl_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ verify_ssl }}"
+        body_format: json
+        body:
+          switchName: "{{ item.switch_name }}"
+          portName: "{{ item.switch_port }}"
+          erlName: "{{ item.erl_name }}"
+        status_code: [200, 201]
+      loop: "{{ erl_rows.list }}"
+      loop_control:
+        label: "{{ item.device_name }}"
+      when: apply_changes
+      register: erl_apply
+      failed_when: erl_apply.status not in [200, 201]

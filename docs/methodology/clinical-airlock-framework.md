@@ -1,6 +1,6 @@
-# Legacy-to-Cloud Healthcare Communication Migration Framework
+# The Clinical Airlock Framework
 
-## Zero-Downtime Migration Methodology for Healthcare PBX-to-Cloud Transitions
+## A Staged Migration Standard for Healthcare Communication Infrastructure
 
 **Author:** Freddy Simon Paul Antony  
 **Version:** 1.0  
@@ -11,16 +11,44 @@
 
 ## Executive Summary
 
-This document provides a systematic methodology for migrating legacy PBX communication systems (Nortel, Avaya, legacy Cisco) to modern cloud-based unified communications platforms (Cisco Webex Calling, Genesys Cloud) in healthcare environments.
+The **Clinical Airlock Framework** is a vendor-agnostic, staged methodology for
+migrating legacy PBX communication systems (Nortel, Avaya, legacy Cisco) to modern
+cloud-based unified communications platforms (Cisco Webex Calling, Genesys Cloud) in
+healthcare environments — without disrupting life-critical clinical services.
 
-Healthcare facilities face unique challenges not addressed in vendor documentation or generic migration guides:
+The framework rejects the industry-default "lift and shift" direct-to-cloud
+migration, which forces latency-sensitive clinical devices and analog emergency
+systems into cloud environments prematurely. Instead, it interposes a mandatory
+validation layer — an "airlock" — between legacy systems and cloud promotion,
+structured in three sequential phases:
+
+| Phase | Name | Purpose |
+|-------|------|---------|
+| Phase 1 | **Forensic Discovery Protocol** | Comprehensive audit of legacy infrastructure, dependencies, and security posture before any change is authorized. |
+| Phase 2 | **Clinical Sandbox Validation** | Testing of migration protocols against high-risk clinical workflows in isolated environments before live deployment. |
+| Phase 3 | **Data-Driven Promotion Analysis** | Authorization of full cloud migration based on captured operational, latency, and reliability data. |
+
+Healthcare facilities face challenges not addressed in vendor documentation or
+generic migration guides:
 - **HIPAA compliance** requirements throughout the migration process
 - **Clinical system dependencies** (Epic, Cerner EHR integration)
 - **Zero tolerance for service disruption** affecting patient care
 - **Complex multi-site coordination** across large healthcare systems
 - **RAY BAUM's Act / Kari's Law** 911 compliance requirements
 
-This methodology has been developed and validated through enterprise-scale implementation (40,000+ endpoints across multi-state healthcare operations).
+This methodology has been developed and validated through enterprise-scale
+implementation (40,000+ endpoints across multi-state healthcare operations).
+
+---
+
+## Framework Phase Mapping
+
+The detailed procedures in this document are organized under the three Clinical
+Airlock phases:
+
+- **Phase 1 — Forensic Discovery Protocol:** Section 1 (Pre-Migration Assessment) and Section 2 (Migration Planning)
+- **Phase 2 — Clinical Sandbox Validation:** Section 3 (Pilot Deployment) and Section 6 (Post-Migration Validation)
+- **Phase 3 — Data-Driven Promotion Analysis:** Section 4 (Phased Execution), Section 5 (Cutover), Section 7 (Decommissioning), and Section 8 (Rollback)
 
 ---
 
@@ -40,6 +68,8 @@ This methodology has been developed and validated through enterprise-scale imple
 ---
 
 ## 1. Pre-Migration Assessment
+
+*Clinical Airlock — Phase 1: Forensic Discovery Protocol*
 
 ### 1.1 Legacy System Inventory
 
@@ -151,6 +181,8 @@ Document all integration points:
 
 ## 3. Pilot Deployment
 
+*Clinical Airlock — Phase 2: Clinical Sandbox Validation*
+
 ### 3.1 Pilot Site Selection Criteria
 
 - [ ] Representative of larger environment
@@ -175,6 +207,8 @@ Before proceeding to broader deployment:
 ---
 
 ## 4. Phased Migration Execution
+
+*Clinical Airlock — Phase 3: Data-Driven Promotion Analysis*
 
 ### 4.1 Pre-Cutover Checklist (T-7 Days)
 

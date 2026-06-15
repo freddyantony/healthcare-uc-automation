@@ -1,0 +1,4 @@
+device_name,building,floor,room,switch_name,switch_port,erl_name,elin
+SEP001122334455,Main Hospital,2,ED-Bay-1,sw-main-2f-idf3,GigabitEthernet1/0/12,ERL_ED_2,7045550101
+SEP001122334466,Main Hospital,3,OR-3,sw-main-3f-idf1,GigabitEthernet1/0/24,ERL_OR_3,7045550102
+SEP001122334477,Mercy Tower,1,Lobby-Desk-14,sw-mercy-1f-idf2,GigabitEthernet1/0/8,ERL_LOBBY_1,7045550103
