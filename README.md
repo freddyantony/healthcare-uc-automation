@@ -158,7 +158,9 @@ Detailed methodology documentation is available in the `/docs` directory:
 
 ## Contributing
 
-This repository is maintained as part of ongoing efforts to document and share healthcare communication infrastructure methodologies. Contributions, suggestions, and feedback are welcome.
+This repository documents healthcare communication infrastructure methodologies for pen use by the broader healthcare IT community — particularly resource-constrained rural and Critical Access Hospitals seeking RAY BAUM's Act compliance without proprietary commercial tooling.
+
+Hospital IT teams, healthcare informatics researchers, and UC engineers are welcome to open issues with questions, deployment feedback, or suggested improvements. To report an issue or request a feature, use the GitHub Issues tab.
 
 ---
 
