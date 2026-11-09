@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample of GET /cerappservices/export/switchport/info. No real hosts. -->
+<SwitchPort>
+  <status>Exporting info</status>
+  <switchip>
+    <SwitchHostName>sw-main-2f-idf3.example.org</SwitchHostName>
+    <SwitchIPAddress>192.0.2.11</SwitchIPAddress>
+    <portDetails>
+      <ERLName>ERL_MAIN_2F_ED</ERLName><IfName>Gi1/0/12</IfName><Location>Main Hospital 2F ED</Location>
+      <PhoneMACAddress>00:11:22:33:44:55</PhoneMACAddress><PhoneExtension>5550111</PhoneExtension>
+      <PhoneIPAddress>192.0.2.101</PhoneIPAddress><PhoneType>Cisco 8865</PhoneType>
+      <PortDescription>ED-Bay-1</PortDescription><PortIdentifier>1/0/12</PortIdentifier><PortName>GigabitEthernet1/0/12</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_2F_ED</ERLName><IfName>Gi1/0/13</IfName><Location>Main Hospital 2F ED</Location>
+      <PhoneMACAddress></PhoneMACAddress><PhoneExtension></PhoneExtension>
+      <PhoneIPAddress></PhoneIPAddress><PhoneType></PhoneType>
+      <PortDescription>ED-Bay-2</PortDescription><PortIdentifier>1/0/13</PortIdentifier><PortName>GigabitEthernet1/0/13</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_3F_OR</ERLName><IfName>Gi1/0/14</IfName><Location>Main Hospital 3F OR</Location>
+      <PhoneMACAddress>00:11:22:33:44:99</PhoneMACAddress><PhoneExtension>5550114</PhoneExtension>
+      <PhoneIPAddress>192.0.2.104</PhoneIPAddress><PhoneType>Cisco 8845</PhoneType>
+      <PortDescription>ED-Nurse-Station</PortDescription><PortIdentifier>1/0/14</PortIdentifier><PortName>GigabitEthernet1/0/14</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName></ERLName><IfName>Gi1/0/15</IfName><Location></Location>
+      <PhoneMACAddress></PhoneMACAddress><PhoneExtension></PhoneExtension>
+      <PhoneIPAddress></PhoneIPAddress><PhoneType></PhoneType>
+      <PortDescription>ED-Triage</PortDescription><PortIdentifier>1/0/15</PortIdentifier><PortName>GigabitEthernet1/0/15</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_2F_ED</ERLName><IfName>Gi1/0/16</IfName><Location>Main Hospital 2F ED</Location>
+      <PhoneMACAddress></PhoneMACAddress><PhoneExtension></PhoneExtension>
+      <PhoneIPAddress></PhoneIPAddress><PhoneType></PhoneType>
+      <PortDescription>ED-Supply</PortDescription><PortIdentifier>1/0/16</PortIdentifier><PortName>GigabitEthernet1/0/16</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_2F_ED</ERLName><IfName>Gi1/0/18</IfName><Location>Main Hospital 2F ED</Location>
+      <PhoneMACAddress>00:11:22:33:44:D1</PhoneMACAddress><PhoneExtension>5550118</PhoneExtension>
+      <PhoneIPAddress>192.0.2.106</PhoneIPAddress><PhoneType>Cisco 8851</PhoneType>
+      <PortDescription>ED-Bay-3</PortDescription><PortIdentifier>1/0/18</PortIdentifier><PortName>GigabitEthernet1/0/18</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_DEFAULT</ERLName><IfName>Gi1/0/20</IfName><Location>Main Hospital (building default)</Location>
+      <PhoneMACAddress>00:11:22:33:44:66</PhoneMACAddress><PhoneExtension>5550113</PhoneExtension>
+      <PhoneIPAddress>192.0.2.102</PhoneIPAddress><PhoneType>Cisco 8845</PhoneType>
+      <PortDescription></PortDescription><PortIdentifier>1/0/20</PortIdentifier><PortName>GigabitEthernet1/0/20</PortName>
+    </portDetails>
+  </switchip>
+  <switchip>
+    <SwitchHostName>sw-main-3f-idf1.example.org</SwitchHostName>
+    <SwitchIPAddress>192.0.2.12</SwitchIPAddress>
+    <portDetails>
+      <ERLName>ERL_MAIN_3F_OR</ERLName><IfName>Gi1/0/24</IfName><Location>Main Hospital 3F OR</Location>
+      <PhoneMACAddress>00:11:22:33:44:FF</PhoneMACAddress><PhoneExtension>5550124</PhoneExtension>
+      <PhoneIPAddress>192.0.2.199</PhoneIPAddress><PhoneType>Cisco 8865</PhoneType>
+      <PortDescription>OR-3</PortDescription><PortIdentifier>1/0/24</PortIdentifier><PortName>GigabitEthernet1/0/24</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_2F_ED</ERLName><IfName>Gi1/0/25</IfName><Location>Main Hospital 2F ED</Location>
+      <PhoneMACAddress></PhoneMACAddress><PhoneExtension></PhoneExtension>
+      <PhoneIPAddress></PhoneIPAddress><PhoneType></PhoneType>
+      <PortDescription>OR-4</PortDescription><PortIdentifier>1/0/25</PortIdentifier><PortName>GigabitEthernet1/0/25</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_3F_OR</ERLName><IfName>Gi1/0/26</IfName><Location>Main Hospital 3F OR</Location>
+      <PhoneMACAddress></PhoneMACAddress><PhoneExtension></PhoneExtension>
+      <PhoneIPAddress></PhoneIPAddress><PhoneType></PhoneType>
+      <PortDescription>OR-5</PortDescription><PortIdentifier>1/0/26</PortIdentifier><PortName>GigabitEthernet1/0/26</PortName>
+    </portDetails>
+    <portDetails>
+      <ERLName>ERL_MAIN_3F_OR</ERLName><IfName>Gi1/0/27</IfName><Location>Main Hospital 3F OR</Location>
+      <PhoneMACAddress>00:11:22:33:44:D2</PhoneMACAddress><PhoneExtension>5550127</PhoneExtension>
+      <PhoneIPAddress>192.0.2.108</PhoneIPAddress><PhoneType>Cisco 8851</PhoneType>
+      <PortDescription>OR-Prep</PortDescription><PortIdentifier>1/0/27</PortIdentifier><PortName>GigabitEthernet1/0/27</PortName>
+    </portDetails>
+  </switchip>
+</SwitchPort>

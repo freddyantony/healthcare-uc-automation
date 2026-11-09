@@ -1,0 +1,15 @@
+-------------------------
+Device ID: SEP001122334488
+Entry address(es):
+  IP address: 198.51.100.21
+Platform: Cisco IP Phone 7841,  Capabilities: Host Phone Two-port Mac Relay
+Interface: GigabitEthernet1/0/8,  Port ID (outgoing port): Port 1
+Holdtime : 150 sec
+
+-------------------------
+Device ID: SEP0011223344AA
+Entry address(es):
+  IP address: 198.51.100.22
+Platform: Cisco IP Phone 7841,  Capabilities: Host Phone Two-port Mac Relay
+Interface: GigabitEthernet1/0/9,  Port ID (outgoing port): Port 1
+Holdtime : 144 sec

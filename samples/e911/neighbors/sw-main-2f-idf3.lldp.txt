@@ -1,0 +1,23 @@
+------------------------------------------------
+Local Intf: Gi1/0/14
+Chassis id: 192.0.2.104
+Port id: 001122334499:P1
+Port Description: SW PORT
+System Name: SEP001122334499
+
+System Description:
+Cisco IP Phone 8845, V1, sip8845_65.14-2-1-0101-14
+
+Time remaining: 162 seconds
+System Capabilities: B,T
+Enabled Capabilities: B,T
+Management Addresses:
+    IP: 192.0.2.104
+Auto Negotiation - supported, enabled
+
+MED Information:
+
+    MED Codes:
+          (NP) Network Policy, (LI) Location Identification
+
+Total entries displayed: 1
