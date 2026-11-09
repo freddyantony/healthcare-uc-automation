@@ -51,7 +51,8 @@ def _exit_code(findings, fail_on: str) -> int:
 
 def cmd_validate(args) -> int:
     db = load_location_db(args.locations)
-    findings = validate_location_db(db, stale_days=args.stale_days)
+    findings = sorted(validate_location_db(db, stale_days=args.stale_days),
+                      key=lambda f: -f.rank)
     print(f"{len(db.records)} records, schema v{db.schema_version}, {len(findings)} issue(s)")
     for f in findings:
         print(f"  [{f.severity}] {f.code}: {f.message}")
