@@ -24,7 +24,7 @@ E911 Reconciliation Engine: continuous, independent verification that every phon
 - `ansible/playbooks/e911-reconcile.yml` for scheduled collection and reconciliation.
 - `ansible/requirements.yml` for the Ansible collections the playbooks use.
 - Synthetic sample hospital dataset in `samples/e911/`.
-- Test suite (60 tests) and GitHub Actions CI (lint, tests on Python 3.9, 3.11 and 3.12, playbook
+- Test suite (60 tests) and GitHub Actions CI (lint, tests on Python 3.10, 3.11 and 3.12, playbook
   syntax checks).
 - `pyproject.toml` packaging with an `e911` console script.
 - `docs/methodology/e911-reconciliation-engine.md`, `CITATION.cff`, this changelog.
