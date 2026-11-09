@@ -1,0 +1,111 @@
+---
+# Healthcare UC Automation - E911 Reconciliation Run
+# --------------------------------------------------
+# 1. Collects CDP / LLDP neighbors and MAC tables from every access switch in
+#    the voice_switches group (read-only show commands).
+# 2. Runs the E911 reconciliation engine against the location database, the
+#    CER exports and the CUCM inventory, appending the run to the audit history.
+#
+# Requires: ansible-galaxy collection install -r ../requirements.yml
+#           pip install -e .   (from the repository root, for the e911 command)
+#
+# Run nightly, for example from cron:
+#   ansible-playbook -i inventory/inventory.yml playbooks/e911-reconcile.yml
+#
+# Then review reports/summary.md and apply reports/remediation.csv with
+# e911-location-update.yml (dry run by default).
+
+- name: Collect switch neighbor and MAC tables
+  hosts: voice_switches
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  vars:
+    ansible_network_os: cisco.ios.ios
+    collect_dir: "{{ playbook_dir }}/../../collected/{{ run_stamp }}"
+    run_stamp: "{{ hostvars['localhost']['run_stamp'] | default(lookup('pipe', 'date -u +%Y%m%dT%H%M%SZ')) }}"
+
+  pre_tasks:
+    - name: Fix one timestamp for the whole run
+      ansible.builtin.set_fact:
+        run_stamp: "{{ lookup('pipe', 'date -u +%Y%m%dT%H%M%SZ') }}"
+      delegate_to: localhost
+      delegate_facts: true
+      run_once: true
+
+  tasks:
+    - name: Run discovery show commands
+      cisco.ios.ios_command:
+        commands:
+          - show cdp neighbors detail
+          - show lldp neighbors detail
+          - show mac address-table dynamic
+      register: discovery_output
+
+    - name: Create the collection directory
+      ansible.builtin.file:
+        path: "{{ collect_dir }}"
+        state: directory
+        mode: "0750"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Save command output as <switch>.<cdp|lldp|mac>.txt
+      ansible.builtin.copy:
+        content: "{{ discovery_output.stdout[item.index] }}"
+        dest: "{{ collect_dir }}/{{ inventory_hostname }}.{{ item.name }}.txt"
+        mode: "0640"
+      delegate_to: localhost
+      loop:
+        - {index: 0, name: cdp}
+        - {index: 1, name: lldp}
+        - {index: 2, name: mac}
+      loop_control:
+        label: "{{ inventory_hostname }}.{{ item.name }}"
+
+- name: Reconcile E911 locations
+  hosts: localhost
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../.."
+    location_db: "{{ repo_root }}/data/locations.csv"
+    cucm_inventory: "{{ repo_root }}/data/endpoint_inventory.csv"
+    reports_dir: "{{ repo_root }}/reports/{{ run_stamp }}"
+    audit_db: "{{ repo_root }}/data/e911_audit.db"
+    cer_host: "{{ hostvars[groups['emergency_responder'][0]]['ansible_host'] }}"
+    fail_on: critical
+
+  tasks:
+    - name: Run the reconciliation engine
+      ansible.builtin.command:
+        argv:
+          - e911
+          - reconcile
+          - --locations
+          - "{{ location_db }}"
+          - --neighbors
+          - "{{ repo_root }}/collected/{{ run_stamp }}"
+          - --cer-host
+          - "{{ cer_host }}"
+          - --inventory
+          - "{{ cucm_inventory }}"
+          - --out
+          - "{{ reports_dir }}"
+          - --audit-db
+          - "{{ audit_db }}"
+          - --fail-on
+          - "{{ fail_on }}"
+      environment:
+        CER_API_USER: "{{ cer_api_username }}"
+        CER_API_PASSWORD: "{{ cer_api_password }}"
+      register: reconcile_run
+      changed_when: false
+      failed_when: reconcile_run.rc not in [0, 1]
+
+    - name: Show the summary
+      ansible.builtin.debug:
+        msg: "{{ reconcile_run.stdout_lines }}"
+
+    - name: Flag findings at or above the fail-on severity
+      ansible.builtin.fail:
+        msg: "E911 drift found at or above '{{ fail_on }}'. See {{ reports_dir }}/summary.md"
+      when: reconcile_run.rc == 1

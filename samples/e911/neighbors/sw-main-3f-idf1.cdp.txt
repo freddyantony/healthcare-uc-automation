@@ -1,0 +1,15 @@
+-------------------------
+Device ID: SEP001122334477
+Entry address(es):
+  IP address: 192.0.2.107
+Platform: Cisco IP Phone 8865,  Capabilities: Host Phone Two-port Mac Relay
+Interface: GigabitEthernet1/0/24,  Port ID (outgoing port): Port 1
+Holdtime : 140 sec
+
+-------------------------
+Device ID: SEP0011223344D2
+Entry address(es):
+  IP address: 192.0.2.108
+Platform: Cisco IP Phone 8851,  Capabilities: Host Phone Two-port Mac Relay
+Interface: GigabitEthernet1/0/27,  Port ID (outgoing port): Port 1
+Holdtime : 122 sec

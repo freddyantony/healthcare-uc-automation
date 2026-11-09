@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "healthcare-uc-automation"
+version = "0.2.0"
+description = "Open-source E911 / RAY BAUM's Act automation for healthcare Cisco UC environments"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Freddy Antony"}]
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.28.0",
+    "defusedxml>=0.7.1",
+]
+
+[project.optional-dependencies]
+network = ["netmiko>=4.1.0"]
+axl = ["zeep>=4.2.0", "python-dotenv>=1.0.0"]
+dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0", "flake8>=6.0.0"]
+
+[project.scripts]
+e911 = "e911.cli:main"
+
+[project.urls]
+Repository = "https://github.com/freddyantony/healthcare-uc-automation"
+
+[tool.setuptools]
+package-dir = {"" = "python"}
+packages = ["e911"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["python"]

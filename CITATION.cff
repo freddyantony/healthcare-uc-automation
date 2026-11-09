@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Healthcare UC Automation: open-source E911 reconciliation for healthcare Cisco UC"
+abstract: >-
+  Open-source tooling and methodology for RAY BAUM's Act dispatchable-location
+  compliance in healthcare unified communications. The E911 reconciliation engine
+  continuously verifies that each phone's 911 location matches the facility's
+  physical cable-plant records by comparing the location database, switch
+  discovery, Cisco Emergency Responder and CUCM, and keeps an append-only audit
+  history of location accuracy.
+type: software
+authors:
+  - family-names: Antony
+    given-names: Freddy
+repository-code: "https://github.com/freddyantony/healthcare-uc-automation"
+license: MIT
+version: 0.2.0
+date-released: "2026-11-09"
+keywords:
+  - E911
+  - RAY BAUM's Act
+  - Kari's Law
+  - dispatchable location
+  - Cisco Emergency Responder
+  - unified communications
+  - healthcare IT

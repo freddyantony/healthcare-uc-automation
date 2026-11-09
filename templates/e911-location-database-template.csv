@@ -1,4 +1,4 @@
-device_name,building,floor,room,switch_name,switch_port,erl_name,elin
-SEP001122334455,Main Hospital,2,ED-Bay-1,sw-main-2f-idf3,GigabitEthernet1/0/12,ERL_ED_2,7045550101
-SEP001122334466,Main Hospital,3,OR-3,sw-main-3f-idf1,GigabitEthernet1/0/24,ERL_OR_3,7045550102
-SEP001122334477,Mercy Tower,1,Lobby-Desk-14,sw-mercy-1f-idf2,GigabitEthernet1/0/8,ERL_LOBBY_1,7045550103
+building,floor,room,jack_id,patch_panel,switch_name,switch_ip,switch_port,port_id,erl_name,elin,street,city,state,zip,device_name,last_verified,verified_by
+Main Hospital,2,ED-Bay-1,2F-A01,IDF3-PP1-01,sw-main-2f-idf3,192.0.2.11,GigabitEthernet1/0/12,1/0/12,ERL_ED_2,7045550101,100 Example Medical Pkwy,Charlotte,NC,28203,SEP001122334455,2026-10-01,netops
+Main Hospital,3,OR-3,3F-B24,IDF1-PP2-24,sw-main-3f-idf1,192.0.2.12,GigabitEthernet1/0/24,1/0/24,ERL_OR_3,7045550102,100 Example Medical Pkwy,Charlotte,NC,28203,SEP001122334466,2026-10-01,netops
+Mercy Tower,1,Lobby-Desk-14,1F-C14,IDF2-PP1-08,sw-mercy-1f-idf2,192.0.2.21,GigabitEthernet1/0/8,1/0/8,ERL_LOBBY_1,7045550103,200 Example Tower Dr,Charlotte,NC,28203,SEP001122334477,2026-10-01,netops

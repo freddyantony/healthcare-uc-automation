@@ -1,0 +1,7 @@
+---
+# Ansible collections used by the playbooks:
+#   ansible-galaxy collection install -r ansible/requirements.yml
+collections:
+  - name: cisco.ios
+  - name: ansible.netcommon
+  - name: community.general

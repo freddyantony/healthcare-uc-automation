@@ -6,6 +6,12 @@ zeep>=4.2.0
 requests>=2.28.0
 urllib3>=1.26.0
 
+# E911 reconciliation engine (python/e911)
+defusedxml>=0.7.1
+
+# Optional: live switch collection (e911 collect)
+# netmiko>=4.1.0
+
 # Data Processing
 pandas>=1.5.0
 openpyxl>=3.0.0

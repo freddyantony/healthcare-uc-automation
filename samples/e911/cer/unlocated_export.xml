@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample of GET /cerappservices/export/unlocatedphones/info. No real hosts. -->
+<UnlocatedDetails>
+  <status>Exporting info</status>
+  <PhoneDetails>
+    <CerServerGroup>CERGroup1</CerServerGroup>
+    <PhoneIPAddr>198.51.100.22</PhoneIPAddr>
+    <PhoneMACAddr>0011223344AA</PhoneMACAddr>
+    <PhoneExt>5550142</PhoneExt>
+    <AssignedERL></AssignedERL>
+    <EffectiveERL>Default</EffectiveERL>
+    <ERLUsedInfo>Default ERL</ERLUsedInfo>
+  </PhoneDetails>
+</UnlocatedDetails>

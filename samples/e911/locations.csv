@@ -1,0 +1,14 @@
+building,floor,room,jack_id,patch_panel,switch_name,switch_ip,switch_port,port_id,erl_name,elin,street,city,state,zip,device_name,last_verified,verified_by
+Main Hospital,2,ED-Bay-1,2F-A01,IDF3-PP1-01,sw-main-2f-idf3,192.0.2.11,GigabitEthernet1/0/12,1/0/12,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,SEP001122334455,2026-10-01,netops
+Main Hospital,2,ED-Bay-2,2F-A02,IDF3-PP1-02,sw-main-2f-idf3,192.0.2.11,GigabitEthernet1/0/13,1/0/13,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,SEP001122334466,2026-10-01,netops
+Main Hospital,2,ED-Nurse-Station,2F-A03,IDF3-PP1-03,sw-main-2f-idf3,192.0.2.11,Gi1/0/14,1/0/14,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,SEP001122334499,2026-09-15,netops
+Main Hospital,2,ED-Triage,2F-A04,IDF3-PP1-04,sw-main-2f-idf3,192.0.2.11,Gi1/0/15,1/0/15,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,,2024-05-01,facilities
+Main Hospital,2,,2F-A05,IDF3-PP1-05,sw-main-2f-idf3,192.0.2.11,Gi1/0/16,1/0/16,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,ATA00AABBCCDD01,2026-08-20,netops
+Main Hospital,2,ED-Bay-3,2F-A06,IDF3-PP1-06,sw-main-2f-idf3,192.0.2.11,Gi1/0/18,1/0/18,ERL_MAIN_2F_ED,5550100,100 Example Medical Pkwy,Springfield,NC,27500,SEP0011223344D1,2026-10-01,netops
+Main Hospital,3,OR-3,3F-B24,IDF1-PP2-24,sw-main-3f-idf1,192.0.2.12,GigabitEthernet1/0/24,1/0/24,ERL_MAIN_3F_OR,5550101,100 Example Medical Pkwy,Springfield,NC,27500,SEP001122334477,2026-10-12,netops
+Main Hospital,3,OR-4,3F-B25,IDF1-PP2-25,sw-main-3f-idf1,192.0.2.12,Gi1/0/25,1/0/25,ERL_MAIN_3F_OR,5550101,100 Example Medical Pkwy,Springfield,NC,27500,,2026-10-12,netops
+Main Hospital,3,OR-5,3F-B26,IDF1-PP2-26,sw-main-3f-idf1,192.0.2.12,Gi1/0/26,1/0/26,ERL_MAIN_3F_OR,5550101,100 Example Medical Pkwy,Springfield,NC,27500,,2026-10-12,netops
+Main Hospital,3,OR-6,3F-B27,IDF1-PP2-27,sw-main-3f-idf1,192.0.2.12,Gi1/0/26,1/0/26,ERL_MAIN_3F_OR,5550101,100 Example Medical Pkwy,Springfield,NC,27500,,2026-10-12,netops
+Main Hospital,3,OR-Prep,3F-B28,IDF1-PP2-28,sw-main-3f-idf1,192.0.2.12,Gi1/0/27,1/0/27,ERL_MAIN_3F_OR,5550101,100 Example Medical Pkwy,Springfield,NC,27500,SEP0011223344D2,2026-10-12,netops
+Annex,1,Lobby-Desk,1F-C08,IDF1-PP1-08,sw-annex-1f-idf1,192.0.2.13,Gi1/0/8,1/0/8,ERL_ANNEX_1F,5550102,,Springfield,NC,27500,SEP001122334488,2026-07-30,netops
+Main Hospital,1,Pharmacy-Fax,PH-FAX-01,MDF-110-12,,,,,ERL_MAIN_1F_PHARM,5550103,100 Example Medical Pkwy,Springfield,NC,27500,AN0A1B2C3D4E5F000,2026-06-02,facilities

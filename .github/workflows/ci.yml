@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Lint
+        run: flake8 --max-line-length 100 python/e911 tests
+      - name: Test
+        run: pytest -q --cov=e911 --cov-report=term-missing
+      - name: Reconcile the sample hospital
+        run: |
+          e911 reconcile --locations samples/e911/locations.csv \
+            --neighbors samples/e911/neighbors \
+            --cer-switchports samples/e911/cer/switchport_export.xml \
+            --cer-unlocated samples/e911/cer/unlocated_export.xml \
+            --inventory samples/e911/cucm/endpoint_inventory.csv \
+            --out reports --audit-db reports/audit.db --fail-on none
+
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ansible and collections
+        run: |
+          pip install ansible-core
+          ansible-galaxy collection install -r ansible/requirements.yml
+      - name: Syntax-check playbooks
+        working-directory: ansible
+        run: |
+          cp inventory/inventory.yml.example inventory/inventory.yml
+          for playbook in playbooks/*.yml; do
+            ansible-playbook -i inventory/inventory.yml "$playbook" --syntax-check
+          done
