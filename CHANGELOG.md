@@ -42,7 +42,7 @@ E911 Reconciliation Engine: continuous, independent verification that every phon
 - `.gitignore` keeps secrets, run outputs, real location data and audit databases out
   of version control.
 
-## [0.1.0] - 2026-06-15
+## [1.0.0] - 2026-06-15
 
 ### Added
 - E911 / RAY BAUM's Act compliance checklist and Clinical Airlock Framework methodology.
@@ -52,5 +52,5 @@ E911 Reconciliation Engine: continuous, independent verification that every phon
 - Bulk ERL update playbook and location database template (v1).
 - AXL phone-operation helpers.
 
-[0.2.0]: https://github.com/freddyantony/healthcare-uc-automation/compare/3a8068c...v0.2.0
-[0.1.0]: https://github.com/freddyantony/healthcare-uc-automation/tree/3a8068c
+[0.2.0]: https://github.com/freddyantony/healthcare-uc-automation/compare/v1.0.0...v0.2.0
+[1.0.0]: https://github.com/freddyantony/healthcare-uc-automation/releases/tag/v1.0.0
