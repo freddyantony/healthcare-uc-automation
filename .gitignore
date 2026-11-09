@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+venv/
+.venv/
+
+# Secrets and environment-specific files
+.env
+ansible/inventory/inventory.yml
+schema/
+
+# Run outputs (keep them out of version control; they may name real hosts)
+reports/
+collected/
+logs/
+*.db
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
