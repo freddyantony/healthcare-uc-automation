@@ -1,26 +1,40 @@
 ---
-# Healthcare UC Automation - Bulk E911 Location Update
-# ----------------------------------------------------
-# Reads an ERL location-mapping CSV (see templates/e911-location-database-template.csv)
-# and applies each switch-port-to-location mapping to Cisco Emergency Responder via
-# its administrative API, supporting RAY BAUM's Act dispatchable-location compliance.
+# Healthcare UC Automation - Bulk E911 Location Update (v0.2)
+# ----------------------------------------------------------
+# Assigns Emergency Response Locations (ERLs) to switch ports in Cisco
+# Emergency Responder through the CER Configuration API (CER 14+, Publisher):
+#
+#   PUT https://<cer>/cerappservices/service/switchport/
+#   {"IPaddress": "<switch ip>", "Allports": "false",
+#    "ERLName": "<erl>", "Ports": ["<CER PortIdentifier>"]}
+#
+# Input: either
+#   - reports/remediation.csv written by `e911 reconcile` (recommended), or
+#   - a location database (templates/e911-location-database-template.csv).
+# Each row needs switch_ip, port_id (CER PortIdentifier), erl_name and a
+# complete dispatchable location (building, floor, room).
 #
 # Run:
-#   export CUCM_AXL_USER=... CUCM_AXL_PASSWORD=...
+#   export CER_API_USER=... CER_API_PASSWORD=...
 #   ansible-playbook -i inventory/inventory.yml playbooks/e911-location-update.yml \
-#       -e "location_csv=../templates/e911-location-database-template.csv"
+#       -e "location_csv=../reports/remediation.csv"
 #
 # Safety:
-#   - Runs in check/report mode by default (apply_changes=false).
-#   - Set -e "apply_changes=true" to perform writes.
-#   - All operations are logged; no PHI is read or written.
+#   - Dry run by default (apply_changes=false): prints the planned changes only.
+#   - With -e "apply_changes=true", writes only after CER reports that switch
+#     discovery is complete, and records every response in a change log under
+#     change_log_dir.
+#   - Uses a dedicated CER API account (cer_api_username), not the AXL account.
+#   - No PHI is read or written.
 
-- name: Bulk update E911 ERL location mappings
+- name: Bulk update E911 ERL switch-port assignments in CER
   hosts: emergency_responder
   gather_facts: false
   vars:
     apply_changes: false
-    location_csv: "../templates/e911-location-database-template.csv"
+    location_csv: "../reports/remediation.csv"
+    change_log_dir: "../logs"
+    cer_base: "https://{{ ansible_host }}"
 
   tasks:
     - name: Verify location CSV exists
@@ -34,54 +48,111 @@
         msg: "Location CSV not found at {{ location_csv }}"
       when: not csv_stat.stat.exists
 
-    - name: Read ERL location mappings from CSV
-      ansible.builtin.read_csv:
+    - name: Read ERL assignments from CSV
+      community.general.read_csv:
         path: "{{ location_csv }}"
       register: erl_rows
       delegate_to: localhost
 
+    - name: Keep rows that carry a CER switch IP, port identifier and ERL
+      ansible.builtin.set_fact:
+        erl_updates: >-
+          {{ erl_rows.list
+             | selectattr('switch_ip', 'defined') | selectattr('switch_ip')
+             | selectattr('port_id', 'defined') | selectattr('port_id')
+             | selectattr('erl_name', 'defined') | selectattr('erl_name')
+             | list }}
+
     - name: Validate each row has a complete dispatchable location
       ansible.builtin.assert:
         that:
-          - item.building | trim | length > 0
-          - item.floor | trim | length > 0
-          - item.room | trim | length > 0
-          - item.switch_name | trim | length > 0
-          - item.switch_port | trim | length > 0
-        fail_msg: "Incomplete dispatchable location for device {{ item.device_name }}"
+          - item.building | default('') | trim | length > 0
+          - item.floor | default('') | trim | length > 0
+          - item.room | default('') | trim | length > 0
+        fail_msg: >-
+          Incomplete dispatchable location for {{ item.switch_name | default('') }}
+          {{ item.switch_port | default('') }}; fix the location record first.
         quiet: true
-      loop: "{{ erl_rows.list }}"
+      loop: "{{ erl_updates }}"
       loop_control:
-        label: "{{ item.device_name }}"
+        label: "{{ item.switch_ip }} {{ item.port_id }}"
 
-    - name: Report planned ERL updates (check mode)
+    - name: Report planned ERL updates
       ansible.builtin.debug:
         msg: >-
-          {{ item.switch_name }}:{{ item.switch_port }} ->
-          ERL {{ item.erl_name }}
+          {{ 'APPLY' if apply_changes | bool else 'PLAN' }}
+          {{ item.switch_name | default(item.switch_ip) }} {{ item.switch_port | default(item.port_id) }}
+          -> ERL {{ item.erl_name }}
           ({{ item.building }} / Floor {{ item.floor }} / {{ item.room }})
-      loop: "{{ erl_rows.list }}"
+          {{ ('was ' ~ item.current_erl) if item.current_erl | default('') else '' }}
+      loop: "{{ erl_updates }}"
       loop_control:
-        label: "{{ item.device_name }}"
-      when: not apply_changes
+        label: "{{ item.switch_ip }} {{ item.port_id }}"
 
-    - name: Apply ERL switch-port location mapping in Cisco Emergency Responder
+    - name: Open a CER session (unauthenticated request returns JSESSIONID)
       ansible.builtin.uri:
-        url: "https://{{ ansible_host }}/cerappservices/erl/switchport"
-        method: POST
-        user: "{{ axl_username }}"
-        password: "{{ axl_password }}"
+        url: "{{ cer_base }}/cerappservices/export/discoverystatus"
+        method: GET
+        headers:
+          Accept: text/xml
+        validate_certs: "{{ verify_ssl }}"
+        status_code: [200, 401]
+      register: cer_session
+      when: apply_changes | bool
+
+    - name: Check CER switch discovery is complete
+      ansible.builtin.uri:
+        url: "{{ cer_base }}/cerappservices/export/discoverystatus"
+        method: GET
+        user: "{{ cer_api_username }}"
+        password: "{{ cer_api_password }}"
+        force_basic_auth: true
+        headers:
+          Accept: text/xml
+          Cookie: "{{ cer_session.cookies_string | default('') }}"
+        validate_certs: "{{ verify_ssl }}"
+        return_content: true
+      register: discovery
+      when: apply_changes | bool
+      failed_when: >-
+        discovery.status != 200 or
+        'discovery is complete' not in (discovery.content | default('') | lower)
+
+    - name: Apply ERL switch-port assignment through the CER Configuration API
+      ansible.builtin.uri:
+        url: "{{ cer_base }}/cerappservices/service/switchport/"
+        method: PUT
+        user: "{{ cer_api_username }}"
+        password: "{{ cer_api_password }}"
         force_basic_auth: true
         validate_certs: "{{ verify_ssl }}"
         body_format: json
+        headers:
+          Accept: application/json
         body:
-          switchName: "{{ item.switch_name }}"
-          portName: "{{ item.switch_port }}"
-          erlName: "{{ item.erl_name }}"
+          IPaddress: "{{ item.switch_ip }}"
+          Allports: "false"
+          ERLName: "{{ item.erl_name }}"
+          Ports:
+            - "{{ item.port_id }}"
         status_code: [200, 201]
-      loop: "{{ erl_rows.list }}"
+        return_content: true
+      loop: "{{ erl_updates }}"
       loop_control:
-        label: "{{ item.device_name }}"
-      when: apply_changes
+        label: "{{ item.switch_ip }} {{ item.port_id }} -> {{ item.erl_name }}"
       register: erl_apply
-      failed_when: erl_apply.status not in [200, 201]
+      when: apply_changes | bool
+      failed_when: >-
+        erl_apply.status not in [200, 201] or
+        'fail' in ((erl_apply.json | default({})).status | default('') | lower)
+
+    - name: Write change log
+      ansible.builtin.copy:
+        dest: "{{ change_log_dir }}/e911-cer-changes-{{ now(utc=true, fmt='%Y%m%dT%H%M%SZ') }}.json"
+        content: >-
+          {{ erl_apply.results
+             | map(attribute='item') | zip(erl_apply.results | map(attribute='json', default={}))
+             | list | to_nice_json }}
+        mode: "0640"
+      delegate_to: localhost
+      when: apply_changes | bool and erl_apply.results is defined

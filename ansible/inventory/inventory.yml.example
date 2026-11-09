@@ -15,6 +15,12 @@ all:
     axl_version: "12.5"
     verify_ssl: true
 
+    # Dedicated CER Configuration/Export API account (a CER user whose access
+    # group grants API roles). Used by e911-location-update.yml and
+    # e911-reconcile.yml.
+    cer_api_username: "{{ lookup('env', 'CER_API_USER') }}"
+    cer_api_password: "{{ lookup('env', 'CER_API_PASSWORD') }}"
+
   children:
     cucm_publishers:
       hosts:
@@ -25,3 +31,14 @@ all:
       hosts:
         cer-pub:
           ansible_host: cer-pub.example.org    # replace with your CER Publisher
+
+    # Access switches surveyed by e911-reconcile.yml (read-only show commands).
+    voice_switches:
+      vars:
+        ansible_user: "{{ lookup('env', 'SWITCH_USER') }}"
+        ansible_password: "{{ lookup('env', 'SWITCH_PASSWORD') }}"
+      hosts:
+        sw-main-2f-idf3:
+          ansible_host: 192.0.2.11
+        sw-main-3f-idf1:
+          ansible_host: 192.0.2.12
