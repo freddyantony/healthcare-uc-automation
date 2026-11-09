@@ -11,6 +11,8 @@ License: MIT
 """
 
 import logging
+import os
+import sys
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 import csv
@@ -289,92 +291,154 @@ class CUCMPhoneManager:
 class E911LocationManager:
     """
     Manager for E911/RAY BAUM's Act dispatchable location compliance.
-    
+
     Healthcare facilities face unique challenges:
     - Large multi-building campuses (500,000+ sq ft)
     - Frequent endpoint moves due to clinical reorganization
     - Integration with multiple carriers and PSAPs
     - Life-safety implications requiring high accuracy
-    
-    This class provides utilities for:
-    - Location database management
-    - Compliance monitoring
-    - Integration with Cisco Emergency Responder
-    - Intrado/carrier coordination
+
+    Since v0.2.0 this class is a thin facade over the ``e911`` reconciliation
+    engine (python/e911), so scripts built on it get the same CER client,
+    location-database validation and drift detection as the ``e911`` CLI:
+
+    - update_switch_port_location: CER Configuration API ERL assignment
+    - bulk_update_locations_from_csv: applies a location DB or remediation CSV
+    - generate_location_gap_report: CER unlocated phones + location-DB gaps
+
+    Credentials default to the CER_API_USER / CER_API_PASSWORD environment
+    variables.
     """
-    
-    def __init__(self, emergency_responder_host: str):
+
+    def __init__(self, emergency_responder_host: str, username: Optional[str] = None,
+                 password: Optional[str] = None, verify_ssl: bool = True, client=None):
         """
         Initialize E911 Location Manager.
-        
+
         Args:
-            emergency_responder_host: Cisco Emergency Responder hostname
+            emergency_responder_host: Cisco Emergency Responder Publisher hostname
+            username / password: CER API account (default: environment)
+            verify_ssl: verify CER's TLS certificate
+            client: pre-built e911.cer.CERClient (tests, custom sessions)
         """
+        _ensure_e911_importable()
+        from e911.cer import CERClient
+
         self.cer_host = emergency_responder_host
+        self.client = client or CERClient(
+            emergency_responder_host,
+            username or os.environ.get("CER_API_USER", ""),
+            password or os.environ.get("CER_API_PASSWORD", ""),
+            verify_ssl=verify_ssl,
+        )
+        self._cer_ports = None
         logger.info(f"Initialized E911 manager for: {emergency_responder_host}")
-    
-    def update_switch_port_location(self, switch_name: str, 
-                                     port: str, 
-                                     erl_name: str) -> bool:
+
+    def _ports(self):
+        if self._cer_ports is None:
+            self._cer_ports = self.client.export_switchports()
+        return self._cer_ports
+
+    def update_switch_port_location(self, switch_name: str,
+                                    port: str,
+                                    erl_name: str) -> bool:
         """
         Update Emergency Response Location for a switch port.
-        
+
         Args:
-            switch_name: Network switch hostname
-            port: Switch port identifier
+            switch_name: Network switch hostname or IP address, as known to CER
+            port: Interface name (Gi1/0/12) or CER PortIdentifier
             erl_name: Emergency Response Location name
-            
+
         Returns:
-            bool: True if update successful
+            bool: True if CER accepted the update
         """
+        from e911.cer import CERError, resolve_port_identifier
+
         logger.info(f"Updating ERL for {switch_name}:{port} -> {erl_name}")
-        
-        # CER API call would go here
-        # Actual implementation uses CER REST API
-        
-        return True
-    
-    def bulk_update_locations_from_csv(self, csv_path: str) -> Dict[str, int]:
+        cer_port = resolve_port_identifier(self._ports(), switch_name, port)
+        switch_ip = cer_port.switch_ip if cer_port else switch_name
+        port_id = cer_port.port_identifier if cer_port else port
+        try:
+            self.client.update_switchport_erl(switch_ip, [port_id], erl_name)
+            return True
+        except CERError as exc:
+            logger.error(f"ERL update failed for {switch_name}:{port}: {exc}")
+            return False
+
+    def bulk_update_locations_from_csv(self, csv_path: str,
+                                       apply: bool = False) -> Dict[str, int]:
         """
-        Bulk update E911 locations from CSV file.
-        
-        CSV Format:
-        switch_name,port,building,floor,room,erl_name
-        
-        Args:
-            csv_path: Path to location mapping CSV
-            
+        Bulk update E911 locations from a CSV file (dry run unless apply=True).
+
+        Accepts a location database (templates/e911-location-database-template.csv)
+        or the remediation.csv written by ``e911 reconcile``. Rows without a
+        complete dispatchable location (building, floor, room) are skipped.
+
         Returns:
-            Dict with update counts
+            Dict with updated / failed / skipped / planned counts
         """
-        results = {'updated': 0, 'failed': 0, 'skipped': 0}
-        
+        from e911.location_db import load_location_db
+
+        results = {'updated': 0, 'failed': 0, 'skipped': 0, 'planned': 0}
         logger.info(f"Bulk updating E911 locations from: {csv_path}")
-        
-        # Implementation would iterate CSV and update each location
-        
+        db = load_location_db(csv_path)
+        if apply and not self.client.discovery_complete():
+            raise RuntimeError("CER discovery is not complete; no changes made.")
+        for rec in db.records:
+            if not rec.dispatchable or not rec.erl_name or not rec.switch_port:
+                results['skipped'] += 1
+                continue
+            if not apply:
+                results['planned'] += 1
+                continue
+            ok = self.update_switch_port_location(
+                rec.switch_ip or rec.switch_name, rec.port_id or rec.switch_port, rec.erl_name)
+            results['updated' if ok else 'failed'] += 1
+        logger.info(f"Bulk update results: {results}")
         return results
-    
-    def generate_location_gap_report(self) -> List[Dict]:
+
+    def generate_location_gap_report(self, location_csv: Optional[str] = None) -> List[Dict]:
         """
-        Identify endpoints without valid E911 location.
-        
+        Identify endpoints without a valid E911 location.
+
         Critical for RAY BAUM's Act compliance - all MLTS endpoints
         must have dispatchable location (building, floor, room/zone).
-        
+
+        Combines CER's unlocated-phones export with, when ``location_csv`` is
+        given, the location database's own data-quality findings.
+
         Returns:
-            List of dicts containing endpoints missing location data
+            List of dicts describing each gap
         """
         logger.info("Scanning for endpoints missing E911 location...")
-        
-        gaps = []
-        
-        # Query CER for unlocated phones
-        # gaps = cer_api.get_unlocated_phones()
-        
+        gaps = [{
+            'source': 'CER unlocated phones',
+            'mac': phone.mac,
+            'extension': phone.extension,
+            'effective_erl': phone.effective_erl,
+            'detail': phone.erl_used_info,
+        } for phone in self.client.export_unlocated()]
+        if location_csv:
+            from e911.location_db import load_location_db, validate_location_db
+
+            for finding in validate_location_db(load_location_db(location_csv)):
+                gaps.append({
+                    'source': 'location database',
+                    'code': finding.code,
+                    'severity': finding.severity,
+                    'detail': finding.message,
+                })
         logger.info(f"Found {len(gaps)} endpoints without E911 location")
-        
         return gaps
+
+
+def _ensure_e911_importable() -> None:
+    """Make python/e911 importable when this module is run from a checkout."""
+    try:
+        import e911  # noqa: F401
+    except ImportError:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Example usage and testing
