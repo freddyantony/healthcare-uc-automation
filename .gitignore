@@ -25,3 +25,6 @@ logs/
 .DS_Store
 .idea/
 .vscode/
+
+# Real location data and audit history used by e911-reconcile.yml
+data/
