@@ -35,6 +35,12 @@ healthcare-uc-automation/
 ├── README.md · CHANGELOG.md · CITATION.cff · LICENSE
 ├── pyproject.toml · requirements.txt
 ├── .github/workflows/ci.yml                   # Lint, tests, playbook syntax checks
+├── clinical-airlock-gatekeeper/               # Clinical Airlock v0.1 prototype
+│   ├── README.md                              # Overview and usage instructions
+│   ├── gatekeeper.py                          # Migration readiness gate evaluation
+│   ├── dependencies.csv                       # Synthetic clinical dependencies
+│   ├── test_results.csv                       # Synthetic test results
+│   └── test_gatekeeper.py                     # Automated unit tests
 ├── docs/
 │   ├── methodology/
 │   │   ├── e911-reconciliation-engine.md      # How the engine works and complements CER
@@ -107,7 +113,26 @@ to cloud UC without disrupting life-critical clinical services: **Forensic Disco
 Protocol → Clinical Sandbox Validation → Data-Driven Promotion Analysis.** See
 [docs/methodology/clinical-airlock-framework.md](docs/methodology/clinical-airlock-framework.md).
 
-### 4. CUCM Inventory & Reporting (Python / AXL)
+### 4. Clinical Airlock Gatekeeper (v0.1 Prototype)
+
+The [Clinical Airlock Gatekeeper](clinical-airlock-gatekeeper/README.md) is a Python-based reference implementation of the Clinical Airlock Framework's evidence-based migration readiness checks.
+
+It demonstrates how healthcare UC engineers can assess migration readiness before advancing critical communication services from legacy PBX infrastructure to modern platforms.
+
+**Current capabilities:**
+
+- Track critical clinical communication dependencies, including emergency calling, paging, and nurse-station escalation.
+- Evaluate required functional test results against documented migration checks.
+- Detect failed tests, missing supporting evidence, and incomplete rollback plans.
+- Produce a **HOLD / NO-GO** result when required safety checks are not satisfied.
+- Return **READY FOR HUMAN REVIEW** when configured requirements are satisfied.
+- Validate the Gatekeeper logic using automated Python unit tests.
+
+**Current status:** v0.1 prototype using synthetic hospital data. The tool does not connect to production CUCM systems, execute migrations, or independently certify clinical safety. Final migration authorization remains the responsibility of designated clinical and technical stakeholders.
+
+[View Source Code and Instructions](clinical-airlock-gatekeeper/README.md)
+
+### 5. CUCM Inventory & Reporting (Python / AXL)
 
 - `python/reporting/endpoint_inventory.py` — connects to CUCM over AXL, executes a live
   inventory query, and writes a CSV plus a model/device-pool summary.
@@ -156,6 +181,32 @@ e911 push --remediation reports/remediation.csv --cer-host cer-pub.example.org  
 e911 history --audit-db reports/e911_audit.db
 ```
 
+### Try Clinical Airlock Gatekeeper (Synthetic Demo)
+
+The Clinical Airlock Gatekeeper runs locally using synthetic hospital data and requires Python 3.10 or newer. No CUCM connection or additional Python packages are required.
+
+From the repository root:
+
+```bash
+python clinical-airlock-gatekeeper/gatekeeper.py
+```
+
+The demonstration includes a failed paging validation and is expected to produce:
+
+```text
+Decision: HOLD / NO-GO
+```
+
+Run the automated unit tests:
+
+```bash
+python -m unittest discover -s clinical-airlock-gatekeeper -p "test_*.py" -v
+```
+
+The test suite checks the Gatekeeper's readiness evaluation behavior.
+
+See the [Gatekeeper README](clinical-airlock-gatekeeper/README.md) for additional information.
+
 ### Credentials
 
 Credentials always come from the environment (or a local `.env`, which is git-ignored):
@@ -190,6 +241,7 @@ pytest
 | [E911 Reconciliation Engine](docs/methodology/e911-reconciliation-engine.md) | Cross-source E911 verification, finding catalog, operating procedure |
 | [E911 Compliance Checklist](docs/methodology/e911-compliance-checklist.md) | RAY BAUM's Act implementation guide for healthcare MLTS |
 | [Clinical Airlock Framework](docs/methodology/clinical-airlock-framework.md) | Staged zero-downtime migration methodology for healthcare PBX-to-cloud transitions |
+| [Clinical Airlock Gatekeeper](clinical-airlock-gatekeeper/README.md) | Python prototype for evidence-based clinical migration readiness checks, safety gates, and synthetic validation tests |
 | [Reference Architecture](docs/architecture/healthcare-uc-reference-architecture.md) | High-availability healthcare UC design patterns |
 | [Changelog](CHANGELOG.md) | Release history |
 
