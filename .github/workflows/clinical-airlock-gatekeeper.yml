@@ -1,0 +1,44 @@
+
+name: Clinical Airlock Gatekeeper Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "clinical-airlock-gatekeeper/**"
+      - ".github/workflows/clinical-airlock-gatekeeper.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "clinical-airlock-gatekeeper/**"
+      - ".github/workflows/clinical-airlock-gatekeeper.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Clinical Airlock unit tests
+        run: |
+          python -m unittest discover \
+            -s clinical-airlock-gatekeeper \
+            -p "test_*.py" -v
+
+      - name: Verify synthetic demonstration
+        run: |
+          python clinical-airlock-gatekeeper/gatekeeper.py | tee demo-output.txt
+          grep -q "Decision: HOLD / NO-GO" demo-output.txt
