@@ -1,0 +1,4 @@
+dependency_id,service,critical,owner,required_test,rollback_plan
+D001,Emergency 911 calling,yes,UC Engineer,911_routing,Restore legacy gateway
+D002,Overhead paging,yes,Clinical Operations,paging_failover,Revert paging route
+D003,Nurse station escalation,yes,Nursing Lead,nurse_escalation,Switch back to legacy call path
