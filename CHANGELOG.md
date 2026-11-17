@@ -6,8 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [0.2.0] - 2026-11-09
 
-E911 Reconciliation Engine: continuous, independent verification that every phone's
-911 location matches the hospital's physical records.
+E911 Reconciliation Engine: continuous, independent cross-source verification of 
+E911 location-data consistency against facility-maintained physical location records.
 
 ### Added
 - `python/e911/` reconciliation engine comparing four sources on every run: the
@@ -15,7 +15,7 @@ E911 Reconciliation Engine: continuous, independent verification that every phon
   Responder exports and the CUCM inventory.
 - Fifteen finding types, from phones on unmapped ports and CER ERL mismatches to stale
   CER tracking and unmapped analog stations, each with a severity and a recommended fix.
-- Dispatchable-location accuracy score per run.
+- Location-data consistency score per reconciliation run.
 - Append-only SQLite audit history with input SHA-256 hashes and new/resolved findings
   between runs.
 - CER client for the export API (`switchport/info`, `unlocatedphones/info`,
