@@ -23,8 +23,8 @@ proprietary commercial tooling.
 - Cisco UC provisioning, inventory, and compliance reporting (AXL / Ansible)
 
 **What's new in v0.2.0:** the [E911 Reconciliation Engine](docs/methodology/e911-reconciliation-engine.md),
-which verifies every night that each phone's 911 location matches the hospital's
-physical records. See the [changelog](CHANGELOG.md).
+which compares E911 location data across four sources to identify discrepancies against facility-maintained location records. 
+See the [changelog](CHANGELOG.md).
 
 ---
 
@@ -61,7 +61,7 @@ healthcare-uc-automation/
 │   │   ├── discovery.py                       # CDP / LLDP / MAC-table discovery
 │   │   ├── cer.py                             # CER export + Configuration API client
 │   │   ├── inventory.py                       # CUCM inventory loader
-│   │   ├── reconcile.py                       # Cross-source drift detection + accuracy score
+│   │   ├── reconcile.py                       # Cross-source drift detection + consistency score
 │   │   ├── audit.py                           # Append-only audit history (SQLite)
 │   │   ├── report.py                          # CSV / JSON / Markdown outputs
 │   │   └── cli.py                             # `e911` command line
@@ -95,9 +95,11 @@ data CER cannot see. The engine compares four independent sources on every run:
 
 It reports 15 kinds of disagreement (phones on unmapped ports, CER ERL mismatches,
 switches CER is not tracking, device moves, stale CER tracking, unmapped analog
-stations and more), scores **dispatchable-location accuracy**, keeps an **append-only
+stations and more), calculates a location-data consistency score, keeps an **append-only
 audit history**, and writes a `remediation.csv` that can be applied to CER through its
 Configuration API. Details: [E911 Reconciliation Engine](docs/methodology/e911-reconciliation-engine.md).
+
+The location-data consistency score measures agreement across available data sources. It does not independently establish physical room-location accuracy, verify PSAP delivery, or certify regulatory compliance. Physical location verification and authorized end-to-end emergency call testing remain necessary.
 
 ### 2. E911 / RAY BAUM's Act Compliance Tooling
 
